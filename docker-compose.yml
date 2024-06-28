@@ -1,0 +1,21 @@
+services:
+
+  postgres:
+    image: postgres:16.3
+    environment:
+      - POSTGRES_DB=asyncalchemy
+      - POSTGRES_USER=fast_user
+      - POSTGRES_PASSWORD=pass
+
+  fast_api_app:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    command: ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://fast_user:pass@postgres:5432/asyncalchemy
